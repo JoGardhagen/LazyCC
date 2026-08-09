@@ -1,0 +1,40 @@
+# Xcode
+
+.DS_Store
+build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcuserdata/
+
+# Swift Package Manager
+
+.build/
+.swiftpm/
+
+# CocoaPods
+
+Pods/
+
+# Carthage
+
+Carthage/Build/
+
+# Fastlane
+
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+
+# Build files
+
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Environment / secrets
+
+.env
+.env.*
+!.env.example
