@@ -55,9 +55,9 @@ struct ContentView: View {
                         .foregroundColor(.white)
                     
                     // En vertikal slider
-                    Slider(value: $zoomLevel, in: 1.0...5.0, step: 0.1)
+                    Slider(value: $zoomLevel, in: 1.0...7.0, step: 0.1)
                         .rotationEffect(.degrees(-90)) // Gör slidern vertikal
-                        .frame(width: 150, height: 40) // Justera ramen efter rotationen
+                        .frame(width: 50, height: 100) // Justera ramen efter rotationen
                         .accentColor(.white)
                     // 3. När slidern ändras -> uppdatera kameran
                         .onChange(of: zoomLevel) { _, newValue in
