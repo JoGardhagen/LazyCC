@@ -24,28 +24,12 @@ struct ContentView: View {
             CameraPreview(session: camera.session)
                 .ignoresSafeArea()
             
+            aimingSight
+                
             // 2. Mitten-området med sikte och Zoom-sidebar
             HStack {
-                Spacer() // Skjut siktet till mitten
+                //Spacer() // Skjut siktet till mitten
                 
-                // --- Siktet (Rektangel) ---
-                VStack(spacing: 10) {
-                    // Visar live-etiketten OVANFÖR rektangeln
-                    if let liveColor = camera.detectedColor {
-                        Text("Ser: \(liveColor.rawValue)")
-                            .font(.caption)
-                            .bold()
-                            .padding(6)
-                            .background(liveColor.color)
-                            .foregroundColor(.white)
-                            .cornerRadius(6)
-                    }
-                    
-                    // Själva siktet: En avlång röd rektangel
-                    Rectangle()
-                        .stroke(Color.red, lineWidth: 3)
-                        .frame(width: 80, height: 40) // Passar bra för en färgring
-                }
                 
                 Spacer() // Skjut siktet till mitten
                 
@@ -126,6 +110,28 @@ struct ContentView: View {
             camera.setZoom(factor: 1.0)
         }
         .onDisappear { camera.stop() }
+    }
+    
+    var aimingSight: some View {
+        // --- Siktet (Rektangel) ---
+        VStack(spacing: 10) {
+            
+            if let liveColor = camera.detectedColor {
+                Text("Ser: \(liveColor.rawValue)")
+                    .font(.caption)
+                    .bold()
+                    .padding(6)
+                    .background(liveColor.color)
+                    .foregroundColor(.white)
+                    .cornerRadius(6)
+            }
+            
+            
+            Rectangle()
+                .stroke(Color.red, lineWidth: 3)
+                .frame(width: 80, height: 40) // Passar bra för en färgring
+        }
+        
     }
     
     private func scanCurrentColor() {
