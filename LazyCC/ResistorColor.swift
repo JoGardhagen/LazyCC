@@ -14,7 +14,7 @@ enum ResistorColor: String, CaseIterable, Identifiable {
     case yellow = "Gul"
     case green = "Grön"
     case blue = "Blå"
-    case violet = "Violett"
+    case violett = "Violett"
     case grey = "Grå"
     case white = "Vit"
     case gold = "Guld"
@@ -31,7 +31,7 @@ enum ResistorColor: String, CaseIterable, Identifiable {
         case .yellow: return 4
         case .green: return 5
         case .blue: return 6
-        case .violet: return 7
+        case .violett: return 7
         case .grey: return 8
         case .white: return 9
         case .gold, .silver: return nil
@@ -47,7 +47,7 @@ enum ResistorColor: String, CaseIterable, Identifiable {
         case .yellow: return 10_000.0
         case .green: return 100_000.0
         case .blue: return 1_000_000.0
-        case .violet: return 10_000_000.0
+        case .violett: return 10_000_000.0
         case .grey: return 100_000_000.0
         case .white: return 1_000_000_000.0
         case .gold: return 0.1
@@ -64,7 +64,7 @@ enum ResistorColor: String, CaseIterable, Identifiable {
         case .yellow: return .yellow
         case .green: return .green
         case .blue: return .blue
-        case .violet: return .purple
+        case .violett: return .purple
         case .grey: return .gray
         case .white: return .white
         case .gold: return Color(red:0.85,green: 0.65,blue: 0.13)
