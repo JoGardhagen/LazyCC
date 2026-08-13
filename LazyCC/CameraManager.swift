@@ -13,8 +13,11 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     private var isConfigured = false
     private var currentInput: AVCaptureDeviceInput?
     
-    var detectedColor: ResistorColor? = nil
-
+    //var detectedColor: ResistorColor? = nil
+    var detectedBands : [ResistorColor] = []
+    var calculatedValue: String = "Siktar..."
+    
+    
     override init() {
         super.init()
         #if !TARGET_INTERFACE_BUILDER
@@ -72,40 +75,53 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        if connection.isVideoRotationAngleSupported(90.0){
-            connection.videoRotationAngle = 90.0
-        }
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        
-        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
-        defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
-        
-        let width = CVPixelBufferGetWidth(pixelBuffer)
-        let height = CVPixelBufferGetHeight(pixelBuffer)
-        guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else { return }
-        let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
-        let buffer = baseAddress.assumingMemoryBound(to: UInt8.self)
-        
-        // Genomsnitt av pixlarna i mitten
-        let centerX = width / 2, centerY = height / 2, sample = 4
-        var totalR = 0.0, totalG = 0.0, totalB = 0.0, count = 0.0
-        
-        for x in (centerX - sample)...(centerX + sample) {
-            for y in (centerY - sample)...(centerY + sample) {
-                let offset = (y * bytesPerRow) + (x * 4)
-                totalB += Double(buffer[offset])
-                totalG += Double(buffer[offset + 1])
-                totalR += Double(buffer[offset + 2])
-                count += 1
+            if connection.isVideoRotationAngleSupported(90.0) {
+                connection.videoRotationAngle = 90.0
+            }
+            
+            guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+            
+            CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
+            defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
+            
+            let width = CVPixelBufferGetWidth(pixelBuffer)
+            let height = CVPixelBufferGetHeight(pixelBuffer)
+            guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else { return }
+            let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+            let buffer = baseAddress.assumingMemoryBound(to: UInt8.self)
+            
+            let centerY = height / 2
+            let startX = width / 2 - 60 // Vänster sida av rektangeln
+            let endX = width / 2 + 60   // Höger sida av rektangeln
+            
+            var scannedLineColors: [ResistorColor?] = []
+            
+            // Scanna var 3:e pixel tvärs över rektangeln
+            for x in stride(from: startX, to: endX, by: 3) {
+                let offset = (centerY * bytesPerRow) + (x * 4)
+                let b = Double(buffer[offset]) / 255.0
+                let g = Double(buffer[offset + 1]) / 255.0
+                let r = Double(buffer[offset + 2]) / 255.0
+                
+                let color = ResistorColorMatcher.match(r: r, g: g, b: b)
+                scannedLineColors.append(color)
+            }
+            
+            // Extrahera unika färgband från linjen
+            let bands = ResistorColorMatcher.extractBands(from: scannedLineColors)
+            
+            DispatchQueue.main.async {
+                self.detectedBands = bands
+                
+                // Om vi hittar minst 3 ringar beräknar vi Ohm direkt!
+                if bands.count >= 3 {
+                    let b1 = bands[0]
+                    let b2 = bands[1]
+                    let mult = bands[2]
+                    self.calculatedValue = ResistorCalculator.calculate(band1: b1, band2: b2, multiplier: mult)
+                } else {
+                    self.calculatedValue = "Hittar \(bands.count)/3 ringar..."
+                }
             }
         }
-        
-        let color = ResistorColorMatcher.match(
-            r: (totalR / count) / 255.0,
-            g: (totalG / count) / 255.0,
-            b: (totalB / count) / 255.0
-        )
-        
-        DispatchQueue.main.async { self.detectedColor = color }
     }
-}

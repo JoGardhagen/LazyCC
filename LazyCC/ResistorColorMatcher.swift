@@ -29,18 +29,39 @@ struct ResistorColorMatcher {
             hue *= 60
         }
         
-            if brightness < 0.18{ return .black}
-            if saturation < 0.22{return brightness > 0.65 ? .white : .grey}
+            if brightness < 0.18{ return .svart}
+            if saturation < 0.22{return brightness > 0.65 ? .vit : .grå}
             
             switch hue {
-            case 0..<16,340...360: return brightness < 0.45 ? .brown : .red
+            case 0..<16,340...360: return brightness < 0.45 ? .brun : .röd
             case 16..<42: return .orange
-            case 42..<70: return .yellow
-            case 70..<156: return .green
-            case 165..<250: return .blue
+            case 42..<70: return .gul
+            case 70..<156: return .grön
+            case 165..<250: return .blå
             case 250..<320: return .violett
             default: return nil
             }
         
         }
+    static func extractBands(from colors: [ResistorColor?]) -> [ResistorColor]{
+        var detectedBands : [ResistorColor] = []
+        var lastColor: ResistorColor? = nil
+        
+        for color in colors {
+            guard let color = color else {
+                lastColor = nil
+                continue
+            }
+            
+            if color == .grå || color == .vit {
+                lastColor = nil
+                continue
+            }
+            if color != lastColor {
+                detectedBands.append(color)
+                lastColor = color
+            }
+        }
+        return detectedBands
     }
+}
