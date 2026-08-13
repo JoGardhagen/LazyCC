@@ -30,7 +30,11 @@ struct ResistorColorMatcher {
         }
         
             if brightness < 0.18{ return .svart}
-            if saturation < 0.22{return brightness > 0.65 ? .vit : .grå}
+            if saturation < 0.25{return brightness > 0.70 ? .vit : .grå}
+        
+            if (hue >= 170 && hue <= 215) && brightness > 0.50{
+                return nil
+            }
             
             switch hue {
             case 0..<16,340...360: return brightness < 0.45 ? .brun : .röd
