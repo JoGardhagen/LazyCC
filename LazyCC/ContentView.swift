@@ -120,7 +120,7 @@ struct ContentView: View {
                     // En streckad linje som visar var koden scannar
                     Rectangle()
                         .fill(Color.red.opacity(0.4))
-                        .frame(height: 2)
+                        .frame(width: 190,height: 2)
                 )
         }
     }

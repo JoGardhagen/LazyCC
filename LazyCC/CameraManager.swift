@@ -113,16 +113,13 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         let bands = ResistorColorMatcher.extractBands(from: scannedLineColors)
         
         DispatchQueue.main.async {
-            self.detectedBands = bands
-            
-            // Om vi hittar minst 3 ringar beräknar vi Ohm direkt!
-            if bands.count >= 3 {
-                let b1 = bands[0]
-                let b2 = bands[1]
-                let mult = bands[2]
-                self.calculatedValue = ResistorCalculator.calculate(band1: b1, band2: b2, multiplier: mult)
+            let safeBands = Array(bands.prefix(5))
+            self.detectedBands = safeBands
+                        
+            if safeBands.count >= 3 {
+                self.calculatedValue = ResistorCalculator.calculate(bands: safeBands)
             } else {
-                self.calculatedValue = "Hittar \(bands.count)/3 ringar..."
+                self.calculatedValue = "Hittar \(safeBands.count) ringar..."
             }
         }
     }
