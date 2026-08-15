@@ -20,25 +20,44 @@ struct ContentView: View {
             // 2. Sikte och automatiskt avlästa ringar i mitten
             aimingSight
             
-            // 3. Zoom-slider på höger sida
+            // 3. Verktygsrad på höger sida (Lampknapp + Zoom)
             HStack {
                 Spacer()
-                VStack {
-                    Image(systemName: "plus.magnifyingglass")
-                        .foregroundColor(.white)
+                VStack(spacing: 16) {
+                    // Knapp för att tända/släcka lampan
+                    Button(action: {
+                        camera.toggleTorch()
+                    }) {
+                        Image(systemName: camera.isTorchOn ? "flashlight.on.fill" : "flashlight.off.fill")
+                            .font(.title2)
+                            .foregroundColor(camera.isTorchOn ? .yellow : .white)
+                            .padding(10)
+                            .background(Color.black.opacity(0.6))
+                            .clipShape(Circle())
+                    }
                     
-                    Slider(value: $zoomLevel, in: 1.0...6.0, step: 0.1)
-                        .rotationEffect(.degrees(-90))
-                        .frame(width: 50, height: 100)
-                        .accentColor(.white)
-                        .onChange(of: zoomLevel) { _, newValue in
-                            camera.setZoom(factor: newValue)
-                        }
-                    
-                    Image(systemName: "minus.magnifyingglass")
-                        .foregroundColor(.white)
+                    Divider()
+                        .background(Color.white.opacity(0.4))
+                        .frame(width: 30)
+
+                    // Zoom-slider
+                    VStack {
+                        Image(systemName: "plus.magnifyingglass")
+                            .foregroundColor(.white)
+                        
+                        Slider(value: $zoomLevel, in: 1.0...6.0, step: 0.1)
+                            .rotationEffect(.degrees(-90))
+                            .frame(width: 50, height: 100)
+                            .accentColor(.white)
+                            .onChange(of: zoomLevel) { _, newValue in
+                                camera.setZoom(factor: newValue)
+                            }
+                        
+                        Image(systemName: "minus.magnifyingglass")
+                            .foregroundColor(.white)
+                    }
                 }
-                .padding(.vertical, 25)
+                .padding(.vertical, 16)
                 .padding(.horizontal, 6)
                 .background(Color.black.opacity(0.5))
                 .cornerRadius(30)
