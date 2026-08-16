@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var camera = CameraManager()
     @State private var zoomLevel: CGFloat = 1.0
-
+    
     var body: some View {
         ZStack {
             // 1. Kamerabakgrund
@@ -39,7 +39,7 @@ struct ContentView: View {
                     Divider()
                         .background(Color.white.opacity(0.4))
                         .frame(width: 30)
-
+                    
                     // Zoom-slider
                     VStack {
                         Image(systemName: "plus.magnifyingglass")
@@ -111,20 +111,32 @@ struct ContentView: View {
                 }
             }
             .frame(height: 25)
-
+            
             // Rektangeln där motståndet ska placeras vågrätt
-            Rectangle()
-                .stroke(Color.red, lineWidth: 3)
-                .frame(width: 140, height: 40)
-                .overlay(
-                    // En streckad linje som visar var koden scannar
-                    Rectangle()
-                        .fill(Color.red.opacity(0.4))
-                        .frame(width: 190,height: 2)
-                )
+            ZStack{
+                Rectangle()
+                    .stroke(Color.red, lineWidth: 3)
+                    .frame(width: 140, height: 40)
+                HStack(spacing: 0) {
+                    Group {
+                        Rectangle().fill(Color.yellow).frame(width: 2, height: 36) // Ring 1
+                        Spacer()
+                        Rectangle().fill(Color.yellow).frame(width: 2, height: 36) // Ring 2
+                        Spacer()
+                        Rectangle().fill(Color.yellow).frame(width: 2, height: 36) // Ring 3
+                        Spacer()
+                        Rectangle().fill(Color.yellow).frame(width: 2, height: 36) // Ring 4
+                        Spacer()
+                        Rectangle().fill(Color.yellow).frame(width: 2, height: 36) // Ring 5
+                    }
+                }
+                .frame(width: 100)
+                
+            }
         }
     }
 }
+
 #Preview {
     ContentView()
 }

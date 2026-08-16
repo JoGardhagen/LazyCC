@@ -47,25 +47,52 @@ struct ResistorColorMatcher {
             }
         
         }
-    static func extractBands(from colors: [ResistorColor?]) -> [ResistorColor]{
-        var detectedBands : [ResistorColor] = []
-        var lastColor: ResistorColor? = nil
-        
-        for color in colors {
-            guard let color = color else {
-                lastColor = nil
-                continue
+    static func extractBands(from profile: [ResistorColor?]) -> [ResistorColor] {
+            var segments: [(color: ResistorColor, count: Int)] = []
+            var currentColor: ResistorColor? = nil
+            var currentCount = 0
+            
+            for color in profile {
+                if let color = color {
+                    if color == currentColor {
+                        currentCount += 1
+                    } else {
+                        if let prev = currentColor {
+                            segments.append((color: prev, count: currentCount))
+                        }
+                        currentColor = color
+                        currentCount = 1
+                    }
+                } else {
+                    if let prev = currentColor {
+                        segments.append((color: prev, count: currentCount))
+                    }
+                    currentColor = nil
+                    currentCount = 0
+                }
+            }
+            if let prev = currentColor {
+                segments.append((color: prev, count: currentCount))
             }
             
-            if color == .grå || color == .vit {
-                lastColor = nil
-                continue
+            // Kräv att ringen hålls stabil i minst 2 pelares bredd
+            let validSegments = segments.filter { $0.count >= 2 }
+            
+            var finalBands: [ResistorColor] = []
+            var lastAdded: ResistorColor? = nil
+            
+            for seg in validSegments {
+                let color = seg.color
+                if color == .vit || color == .grå {
+                    lastAdded = nil
+                    continue
+                }
+                if color != lastAdded {
+                    finalBands.append(color)
+                    lastAdded = color
+                }
             }
-            if color != lastColor {
-                detectedBands.append(color)
-                lastColor = color
-            }
+            
+            return finalBands
         }
-        return detectedBands
     }
-}
