@@ -10,10 +10,12 @@ import SwiftUI
 @Observable
 class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     let session = AVCaptureSession()
+    let hardware = CameraHardwareService()
+    
     private var isConfigured = false
     private var currentInput: AVCaptureDeviceInput?
     
-    var isTorchOn: Bool = false
+    //var isTorchOn: Bool = false
     
     //var detectedColor: ResistorColor? = nil
     var detectedBands : [ResistorColor] = []
@@ -65,16 +67,20 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
             if self.session.isRunning { self.session.stopRunning() }
         }
     }
-    
-    func setZoom(factor: CGFloat) {
-        guard let device = currentInput?.device else { return }
-        do {
-            try device.lockForConfiguration()
-            let clamped = max(device.minAvailableVideoZoomFactor, min(factor, 8.0))
-            device.videoZoomFactor = clamped
-            device.unlockForConfiguration()
-        } catch { print("Zoom-fel: \(error)") }
+    // --- Delegerade hårdvarukontroller ---
+    func toggleTorch() {
+        hardware.toggleTorch(device: currentInput?.device)
     }
+        
+    func setZoom(factor: CGFloat) {
+        hardware.setZoom(factor: factor, device: currentInput?.device)
+    }
+        
+    var isTorchOn: Bool {
+        hardware.isTorchOn
+    }
+    
+    
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
             if connection.isVideoRotationAngleSupported(90.0) {
@@ -94,21 +100,5 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
             }
         }
     
-    func toggleTorch(){
-        guard let device = currentInput?.device, device.hasTorch else { return }
-        
-        do{
-            try device.lockForConfiguration()
-            if device.torchMode == .on{
-                device.torchMode = .off
-                isTorchOn = false
-            }else{
-                device.torchMode = .on
-            }
-            
-            device.unlockForConfiguration()
-        }catch{
-            print("Kunde inte ändra lampans status: \(error)")
-        }
-    }
+    
 }
