@@ -69,7 +69,7 @@ struct ContentView: View {
                 Spacer()
                 
                 VStack(spacing: 8) {
-                    Text("AUTOMATISK AVLÄSNING")
+                    Text("Automatic Scan")
                         .font(.caption2)
                         .bold()
                         .foregroundColor(.gray)

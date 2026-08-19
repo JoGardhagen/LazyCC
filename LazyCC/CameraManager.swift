@@ -19,7 +19,7 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     //var detectedColor: ResistorColor? = nil
     var detectedBands : [ResistorColor] = []
-    var calculatedValue: String = "Siktar..."
+    var calculatedValue: String = "Aiming..."
     
     
     override init() {
@@ -95,7 +95,7 @@ class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
                 if detected.count >= 3 {
                     self.calculatedValue = ResistorCalculator.calculate(bands: detected)
                 } else {
-                    self.calculatedValue = "Passa in ringarna i siktet..."
+                    self.calculatedValue = "Aim at bands..."
                 }
             }
         }
